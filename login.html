@@ -34,19 +34,9 @@
     font-size: 28px;
     margin: 0 auto 24px;
   }
-  h1 {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    margin-bottom: 8px;
-  }
+  h1 { font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
   h1 span { color: #f5a623; }
-  p {
-    color: #666;
-    font-size: 14px;
-    line-height: 1.6;
-    margin-bottom: 36px;
-  }
+  p { color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 36px; }
   .google-btn {
     display: flex;
     align-items: center;
@@ -66,28 +56,6 @@
   }
   .google-btn:hover { opacity: 0.9; transform: scale(1.02); }
   .google-btn:active { transform: scale(0.98); }
-  .google-icon {
-    width: 20px; height: 20px;
-  }
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 24px 0;
-    color: #333;
-    font-size: 12px;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: #222;
-  }
-  .footer {
-    margin-top: 32px;
-    font-size: 12px;
-    color: #444;
-  }
   .error {
     background: rgba(244,67,54,0.1);
     border: 1px solid rgba(244,67,54,0.3);
@@ -98,17 +66,16 @@
     margin-top: 16px;
     display: none;
   }
+  .footer { margin-top: 32px; font-size: 12px; color: #444; }
 </style>
 </head>
 <body>
-
 <div class="card">
   <div class="logo">⚡</div>
   <h1>Welcome to <span>AriexAI</span></h1>
   <p>Your AI-powered civil engineering assistant.<br/>Sign in to access Cortex.</p>
-
   <button class="google-btn" onclick="signInWithGoogle()">
-    <svg class="google-icon" viewBox="0 0 24 24">
+    <svg width="20" height="20" viewBox="0 0 24 24">
       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
       <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
       <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -116,37 +83,26 @@
     </svg>
     Continue with Google
   </button>
-
   <div class="error" id="errorMsg"></div>
-
-  <div class="footer">
-    By signing in you agree to AriexAI Terms of Service
-  </div>
+  <div class="footer">By signing in you agree to AriexAI Terms of Service</div>
 </div>
-
 <script>
   const { createClient } = supabase
-
   const client = createClient(
     'https://yvgvcszfdegjxgsggtcg.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2Z3Zjc3pmZGVnanhnc2dndGNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NDI3MzYsImV4cCI6MjA5MDUxODczNn0.AHLSt81SyVLSCZU3vj6DS0tq0nYd4vY5bIHLqSxUZYE'
   )
 
-  // Check if already logged in
   async function checkSession() {
     const { data: { session } } = await client.auth.getSession()
-    if (session) {
-      window.location.href = '/'
-    }
+    if (session) window.location.href = '/'
   }
   checkSession()
 
   async function signInWithGoogle() {
     const { error } = await client.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/'
-      }
+      options: { redirectTo: window.location.origin + '/' }
     })
     if (error) {
       const msg = document.getElementById('errorMsg')
