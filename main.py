@@ -285,3 +285,8 @@ def cortex_query(data: CortexRequest):
         "answer": result["answer"],
         "category": result["category"]
     }
+# login
+
+@app.get("/login")
+def login():
+    return FileResponse("login.html")
