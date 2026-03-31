@@ -42,6 +42,9 @@ app = FastAPI(title="Ariex Cortex API")
 @app.get("/")
 def root():
     return FileResponse("index.html")
+@app.get("/login")
+def login():
+    return FileResponse("login.html")
 # -----------------------
 # OCR CONFIG
 # -----------------------
@@ -285,8 +288,3 @@ def cortex_query(data: CortexRequest):
         "answer": result["answer"],
         "category": result["category"]
     }
-# login
-
-@app.get("/login")
-def login():
-    return FileResponse("login.html")
