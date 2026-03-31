@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ariex OS | Pulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1014;--bg2:#16181e;--bg3:#1e2028;--bg4:#252830;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,0.12);
+  --green:#22c55e;--green-dim:rgba(34,197,94,0.12);
+  --red:#ef4444;--red-dim:rgba(239,68,68,0.12);
+  --blue:#3b82f6;--blue-dim:rgba(59,130,246,0.1);
+  --text:#f0f2f5;--text2:#9299a6;--text3:#4d5562;
+  --syne:'Syne',sans-serif;--sans:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --r:12px;--rs:8px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.5}
+.app{position:relative;z-index:1}
+header{padding:20px 40px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(15,16,20,0.85);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--amber),#e07b00);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:var(--syne);color:#000}
+.logo-text{font-family:var(--syne);font-size:18px;font-weight:700;letter-spacing:-0.5px}
+.logo-text span{color:var(--amber)}
+.header-right{display:flex;align-items:center;gap:10px}
+.date-badge{font-size:11px;font-family:var(--mono);color:var(--text2);background:var(--bg3);padding:5px 12px;border-radius:20px;border:1px solid var(--border)}
+.container{max-width:1200px;margin:0 auto;padding:32px 40px 80px}
+.setup-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;margin-bottom:28px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.sf{display:flex;flex-direction:column;gap:5px;flex:1;min-width:140px}
+.sf label{font-size:10px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:0.1em}
+.sf input,.sf select{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rs);padding:8px 12px;font-size:13px;font-family:var(--sans);color:var(--text);outline:none;transition:border-color 0.15s}
+.sf input:focus,.sf select:focus{border-color:var(--amber)}
+select option{background:var(--bg2)}
+.summary-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:14px;margin-bottom:28px}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px}
+.sc-label{font-size:10px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px}
+.sc-value{font-family:var(--syne);font-size:28px;font-weight:700;letter-spacing:-1px}
+.sc-sub{font-size:12px;color:var(--text2);margin-top:4px}
+.pbar-bg{height:8px;background:var(--bg4);border-radius:10px;overflow:hidden;margin-top:12px}
+.pbar-fill{height:100%;border-radius:10px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1)}
+.prog-lbl{display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);color:var(--text3);margin-top:6px}
+.deadline-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;margin-bottom:28px;display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+.dl-stats{display:flex;gap:24px;margin-left:auto;flex-wrap:wrap}
+.dl-stat{text-align:center}
+.dl-val{font-family:var(--syne);font-size:22px;font-weight:700;letter-spacing:-0.5px}
+.dl-lbl{font-size:10px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:0.08em}
+.sec-title{font-family:var(--syne);font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.sec-tag{font-size:10px;font-family:var(--mono);background:var(--amber-dim);color:var(--amber);padding:3px 10px;border-radius:10px}
+.floor-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.floor-tab{padding:7px 16px;border-radius:20px;font-size:12px;font-family:var(--mono);border:1px solid var(--border2);cursor:pointer;transition:all 0.15s;background:var(--bg3);color:var(--text2)}
+.floor-tab:hover{border-color:var(--amber);color:var(--text)}
+.floor-tab.active{background:var(--amber-dim);border-color:rgba(245,158,11,0.4);color:var(--amber)}
+.floor-panel{display:none;animation:fadeUp 0.25s ease}
+.floor-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.floor-header{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 22px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.floor-title{font-family:var(--syne);font-size:16px;font-weight:700;flex:1}
+.fpill{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:5px 14px;font-size:12px;font-family:var(--mono)}
+.floor-body{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.card-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-family:var(--syne);font-size:13px;font-weight:600}
+.mini-btn{font-size:11px;background:none;border:1px solid var(--border2);color:var(--text2);padding:4px 10px;border-radius:6px;cursor:pointer;font-family:var(--sans);transition:all 0.15s}
+.mini-btn:hover{border-color:var(--amber);color:var(--amber)}
+.mini-btn.blue:hover{border-color:var(--blue);color:var(--blue)}
+.work-item{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid var(--border);transition:background 0.1s}
+.work-item:last-child{border-bottom:none}
+.work-item:hover{background:var(--bg3)}
+.wi-name{font-size:13px;color:var(--text);flex:1}
+.stoggle{display:flex;border-radius:6px;overflow:hidden;border:1px solid var(--border2)}
+.sbtn{padding:4px 10px;font-size:10px;font-family:var(--mono);border:none;cursor:pointer;transition:all 0.15s;background:var(--bg3);color:var(--text3)}
+.sbtn.done.on{background:var(--green-dim);color:var(--green)}
+.sbtn.pending.on{background:var(--amber-dim);color:var(--amber)}
+.sbtn.delayed.on{background:var(--red-dim);color:var(--red)}
+.sbtn:hover{background:var(--bg4)}
+.del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 4px;transition:color 0.15s}
+.del-btn:hover{color:var(--red)}
+.add-form{display:none;padding:10px 18px;border-top:1px solid var(--border);gap:8px;align-items:center}
+.add-form.show{display:flex}
+.add-form input{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rs);padding:7px 10px;font-size:13px;font-family:var(--sans);color:var(--text);outline:none}
+.add-form input:focus{border-color:var(--amber)}
+.add-form button{padding:7px 14px;border-radius:var(--rs);font-size:12px;font-family:var(--sans);font-weight:500;cursor:pointer;border:none;transition:all 0.15s}
+.btn-ok{background:var(--amber);color:#000}
+.btn-ok:hover{background:#fbbf24}
+.btn-no{background:var(--bg4);color:var(--text2);border:1px solid var(--border2)}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:14px}
+.pthumb{aspect-ratio:1;border-radius:6px;overflow:hidden;background:var(--bg3);border:1px solid var(--border);cursor:pointer;position:relative}
+.pthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pthumb .pdel{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);border:none;color:#fff;width:20px;height:20px;border-radius:50%;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.pthumb:hover .pdel{display:flex}
+.photo-empty{padding:32px 20px;text-align:center;font-size:12px;color:var(--text3);font-family:var(--mono)}
+.pending-section{margin-top:28px}
+.pending-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.pending-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;display:flex;align-items:center;gap:10px}
+.pdot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0}
+.ptag{font-size:10px;font-family:var(--mono);color:var(--amber);background:var(--amber-dim);padding:2px 8px;border-radius:10px;margin-left:auto;flex-shrink:0}
+.ptext{font-size:13px;color:var(--text2);flex:1}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;font-family:var(--sans);cursor:pointer;border:none;transition:all 0.15s}
+.btn-amber{background:var(--amber);color:#000}
+.btn-amber:hover{background:#fbbf24;transform:translateY(-1px)}
+.btn-ghost{background:var(--bg3);border:1px solid var(--border2);color:var(--text)}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:28px;width:90%;max-width:440px}
+.modal h3{font-family:var(--syne);font-size:16px;font-weight:700;margin-bottom:20px}
+.mf{margin-bottom:14px}
+.mf label{display:block;font-size:11px;font-family:var(--mono);color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.mf input,.mf textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rs);padding:9px 12px;font-size:13px;font-family:var(--sans);color:var(--text);outline:none;resize:vertical}
+.mf input:focus,.mf textarea:focus{border-color:var(--amber)}
+.mf textarea{min-height:80px}
+.modal-btns{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rs);padding:11px 18px;font-size:13px;color:var(--text);z-index:999;transform:translateY(60px);opacity:0;transition:all 0.3s;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-left:3px solid var(--green)}
+.toast.warn{border-left:3px solid var(--amber)}
+.photo-input{display:none}
+@media(max-width:768px){
+  header{padding:14px 20px}
+  .container{padding:20px}
+  .summary-row{grid-template-columns:1fr 1fr}
+  .floor-body{grid-template-columns:1fr}
+  .setup-bar{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <div class="logo" style="gap:16px">
+    <div style="display:flex;align-items:center;gap:8px;padding-right:16px;position:relative">
+      <div style="background:#00d26a;color:#fff;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900">✓</div>
+      <div style="font-family:var(--sans);font-weight:700;font-size:18px;letter-spacing:-0.5px">Ariex OS</div>
+      <!-- vertical divider line -->
+      <div style="position:absolute;right:0;top:-2px;bottom:-2px;width:1px;background:var(--border2)"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="background:#ffa500;color:#000;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;font-family:var(--syne)">P</div>
+      <div style="font-family:var(--sans);font-weight:700;font-size:18px;letter-spacing:-0.5px">Pulse</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div style="display:flex;align-items:center;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rs);padding:2px 4px;margin-right:12px">
+      <select id="building-select" style="background:transparent;color:var(--text);border:none;font-size:12px;font-family:var(--sans);font-weight:500;outline:none;cursor:pointer;padding:4px 8px" onchange="switchBuilding(this.value)">
+      </select>
+      <button class="btn btn-ghost" style="padding:4px 8px;font-size:14px;border:none;border-left:1px solid var(--border2);border-radius:0" onclick="addNewBuilding()" title="Add New Building">+</button>
+    </div>
+    <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;margin-right:8px" onclick="openDashboard()">📊 Project Work Report</button>
+    <div class="date-badge" id="current-date"></div>
+    <button class="btn btn-amber" onclick="openAddFloorModal()">+ Add Floor</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Project Setup -->
+  <div class="setup-bar">
+    <div class="sf">
+      <label>Building / Project Name</label>
+      <input type="text" id="project-name" placeholder="e.g. Building No. 6" oninput="saveProject()">
+    </div>
+    <div class="sf" style="max-width:150px">
+      <label>Location</label>
+      <input type="text" id="project-location" placeholder="e.g. Bengaluru" oninput="saveProject()">
+    </div>
+    <div class="sf" style="max-width:170px">
+      <label>Start Date</label>
+      <input type="date" id="start-date" onchange="updateDeadline()">
+    </div>
+    <div class="sf" style="max-width:170px">
+      <label>Target End Date</label>
+      <input type="date" id="end-date" onchange="updateDeadline()">
+    </div>
+    <div class="sf" style="max-width:110px">
+      <label>Total Months</label>
+      <input type="number" id="total-months" placeholder="12" min="1" oninput="updateDeadline()">
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-row">
+    <div class="sc">
+      <div class="sc-label">What work is planned?</div>
+      <div class="sc-value" id="total-planned" style="color:var(--text)">0</div>
+      <div class="sc-sub">total tasks identified</div>
+    </div>
+    <div class="sc">
+      <div class="sc-label">What is completed?</div>
+      <div class="sc-value" id="overall-pct" style="color:var(--green)">0%</div>
+      <div class="sc-sub" id="overall-sub">0 tasks done</div>
+      <div class="pbar-bg" style="margin-top:8px"><div class="pbar-fill" id="overall-bar" style="width:0%;background:var(--green)"></div></div>
+    </div>
+    <div class="sc">
+      <div class="sc-label">What is delayed?</div>
+      <div class="sc-value" id="total-delayed" style="color:var(--red)">0</div>
+      <div class="sc-sub">tasks marked delayed</div>
+    </div>
+    <div class="sc">
+      <div class="sc-label">What should happen next?</div>
+      <div id="next-tasks" style="font-size:13px;color:var(--text);margin-top:6px;line-height:1.4">
+        Add floors to see suggestions.
+      </div>
+    </div>
+  </div>
+
+  <!-- Deadline Tracker -->
+  <div class="deadline-card">
+    <div>
+      <div class="sc-label" style="margin-bottom:8px">Project Timeline</div>
+      <div style="width:240px">
+        <div class="pbar-bg" style="height:6px"><div class="pbar-fill" id="timeline-bar" style="width:0%;background:var(--amber)"></div></div>
+        <div class="prog-lbl"><span id="tl-start">Set dates above</span><span id="tl-end"></span></div>
+      </div>
+    </div>
+    <div class="dl-stats">
+      <div class="dl-stat">
+        <div class="dl-val" id="days-elapsed" style="color:var(--amber)">—</div>
+        <div class="dl-lbl">Days elapsed</div>
+      </div>
+      <div class="dl-stat">
+        <div class="dl-val" id="days-remaining" style="color:var(--text)">—</div>
+        <div class="dl-lbl">Days left</div>
+      </div>
+      <div class="dl-stat">
+        <div class="dl-val" id="pct-time-used" style="color:var(--text)">—</div>
+        <div class="dl-lbl">Time used</div>
+      </div>
+      <div class="dl-stat">
+        <div class="dl-val" id="months-left" style="color:var(--amber)">—</div>
+        <div class="dl-lbl">Months left</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floors -->
+  <div class="sec-title">
+    Floor-by-Floor Progress
+    <span class="sec-tag" id="floor-count-tag">0 floors</span>
+  </div>
+  <div class="floor-tabs" id="floor-tabs"></div>
+  <div id="floor-panels"></div>
+
+  <!-- Empty state -->
+  <div id="empty-state" style="text-align:center;padding:60px 20px;color:var(--text3)">
+    <div style="font-size:40px;margin-bottom:12px">🏗️</div>
+    <div style="font-family:var(--syne);font-size:16px;color:var(--text2);margin-bottom:8px">No floors added yet</div>
+    <div style="font-size:13px;margin-bottom:20px">Add your first floor to start tracking progress</div>
+    <button class="btn btn-amber" onclick="openAddFloorModal()">+ Add First Floor</button>
+  </div>
+
+  <!-- Pending List -->
+  <div class="pending-section" id="pending-section" style="display:none">
+    <div class="sec-title">
+      All Pending Items
+      <span class="sec-tag" id="pending-count-tag">0 pending</span>
+    </div>
+    <div class="pending-grid" id="pending-list"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- Killer Features UI -->
+<button class="btn btn-amber" style="position:fixed;bottom:24px;left:24px;z-index:900;box-shadow:0 4px 12px rgba(245,158,11,0.2)" onclick="generateReport()">📄 Auto Daily Report</button>
+
+<div class="modal-overlay" id="report-modal">
+  <div class="modal" style="max-width:500px">
+    <h3>Daily Progress Report</h3>
+    <div id="report-content" style="font-size:13px;color:var(--text2);line-height:1.6;background:var(--bg3);padding:16px;border-radius:var(--rs);white-space:pre-wrap;margin-bottom:20px;font-family:var(--mono);border:1px solid var(--border)"></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="document.getElementById('report-modal').classList.remove('show')">Close</button>
+      <button class="btn btn-amber" onclick="toast('Report copied to clipboard!','success')">Copy Report</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="dashboard-modal">
+  <div class="modal" style="max-width:600px">
+
+    <h3>📊 Project Dashboard</h3>
+
+    <!-- Overall Progress -->
+    <div style="margin:15px 0">
+      <div style="font-size:13px;margin-bottom:5px">Overall Progress</div>
+      <div style="background:#252830;height:10px;border-radius:10px">
+        <div id="overall-progress-bar" style="height:100%;border-radius:10px;background:#22c55e;width:0%"></div>
+      </div>
+      <div id="overall-progress-text" style="font-size:12px;margin-top:5px">0%</div>
+    </div>
+
+    <!-- Stats -->
+    <div style="display:flex;gap:10px;margin:20px 0">
+      <div style="flex:1;background:#1e2028;padding:10px;border-radius:8px">
+        ✔ Completed<br><b id="done-count">0</b>
+      </div>
+      <div style="flex:1;background:#1e2028;padding:10px;border-radius:8px">
+        ⏳ Ongoing<br><b id="ongoing-count">0</b>
+      </div>
+      <div style="flex:1;background:#1e2028;padding:10px;border-radius:8px">
+        ⚠ Delayed<br><b id="delayed-count">0</b>
+      </div>
+    </div>
+
+    <!-- Floor-wise -->
+    <div>
+      <h4 style="margin-bottom:10px">🏗 Floor-wise Progress</h4>
+      <div id="floor-progress-list"></div>
+    </div>
+
+    <div style="text-align:right;margin-top:20px">
+      <button class="btn btn-ghost" onclick="document.getElementById('dashboard-modal').classList.remove('show')">Close</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Add Floor Modal -->
+<div class="modal-overlay" id="add-floor-modal">
+  <div class="modal">
+    <h3>Add New Floor</h3>
+    <div class="mf">
+      <label>Floor Name</label>
+      <input type="text" id="new-floor-name" placeholder="e.g. Ground Floor, 1st Floor, Terrace">
+    </div>
+    <div class="mf">
+      <label>Work Items (comma separated)</label>
+      <textarea id="new-floor-items">Plaster, Primer, Tiles, Tiles for bathroom, Side tiles for corridor, Window, Door, Electrical wiring, Electrical points, Plumbing</textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-amber" onclick="addFloor()">Add Floor</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let appDb = { activeIdx: 0, buildings: [] };
+let state = null;
+let activeFloorId = null;
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('current-date').textContent =
+    new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  loadState();
+  renderAll();
+});
+
+function createEmptyBuilding(name){
+  return { id:uid(), projectName:name, location:'', startDate:'', endDate:'', totalMonths:'', floors:[] };
+}
+
+function saveState(){
+  appDb.buildings[appDb.activeIdx] = state;
+  localStorage.setItem('pulse_v2', JSON.stringify(appDb));
+}
+
+function loadState(){
+  const s2 = localStorage.getItem('pulse_v2');
+  if(s2) {
+    appDb = JSON.parse(s2);
+  } else {
+    // Migration from v1
+    const s1 = localStorage.getItem('pulse_v1');
+    if(s1) {
+      appDb.buildings.push(JSON.parse(s1));
+    } else {
+      appDb.buildings.push(createEmptyBuilding('Building 1'));
+    }
+  }
+  
+  if(!appDb.buildings[appDb.activeIdx]) appDb.activeIdx = 0;
+  state = appDb.buildings[appDb.activeIdx];
+  syncInputs();
+  renderBuildingSelect();
+}
+
+function syncInputs(){
+  document.getElementById('project-name').value    = state.projectName||'';
+  document.getElementById('project-location').value= state.location||'';
+  document.getElementById('start-date').value      = state.startDate||'';
+  document.getElementById('end-date').value        = state.endDate||'';
+  document.getElementById('total-months').value    = state.totalMonths||'';
+}
+
+function renderBuildingSelect(){
+  const sel = document.getElementById('building-select');
+  sel.innerHTML = appDb.buildings.map((b, i) => `<option value="${i}" ${i===appDb.activeIdx?'selected':''}>${b.projectName || 'Unnamed Building'}</option>`).join('');
+}
+
+function switchBuilding(idx){
+  appDb.activeIdx = parseInt(idx);
+  state = appDb.buildings[appDb.activeIdx];
+  activeFloorId = null;
+  syncInputs();
+  saveState();
+  renderAll();
+}
+
+function addNewBuilding(){
+  const name = prompt("Enter new building name:");
+  if(!name) return;
+  appDb.buildings.push(createEmptyBuilding(name));
+  appDb.activeIdx = appDb.buildings.length - 1;
+  state = appDb.buildings[appDb.activeIdx];
+  activeFloorId = null;
+  syncInputs();
+  renderBuildingSelect();
+  saveState();
+  renderAll();
+  toast(name + " added!");
+}
+
+function saveProject(){
+  state.projectName = document.getElementById('project-name').value;
+  state.location    = document.getElementById('project-location').value;
+  renderBuildingSelect();
+  saveState();
+}
+function updateDeadline(){
+  state.startDate   = document.getElementById('start-date').value;
+  state.endDate     = document.getElementById('end-date').value;
+  state.totalMonths = document.getElementById('total-months').value;
+  if(state.startDate && state.totalMonths && !state.endDate){
+    const d = new Date(state.startDate);
+    d.setMonth(d.getMonth()+parseInt(state.totalMonths));
+    state.endDate = d.toISOString().split('T')[0];
+    document.getElementById('end-date').value = state.endDate;
+  }
+  renderDeadline(); saveState();
+}
+function renderDeadline(){
+  if(!state.startDate||!state.endDate) return;
+  const start=new Date(state.startDate), end=new Date(state.endDate), today=new Date();
+  const total   = Math.round((end-start)/86400000);
+  const elapsed = Math.max(0,Math.round((today-start)/86400000));
+  const remaining=Math.max(0,Math.round((end-today)/86400000));
+  const pct     = Math.min(100,Math.round((elapsed/total)*100));
+  const mLeft   = (remaining/30.44).toFixed(1);
+  document.getElementById('tl-start').textContent    = start.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+  document.getElementById('tl-end').textContent      = end.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('days-elapsed').textContent= elapsed;
+  document.getElementById('days-remaining').textContent=remaining;
+  document.getElementById('pct-time-used').textContent=pct+'%';
+  document.getElementById('months-left').textContent =mLeft;
+  document.getElementById('timeline-bar').style.width=pct+'%';
+  const re=document.getElementById('days-remaining');
+  if(remaining<30) re.style.color='var(--red)';
+  else if(remaining<90) re.style.color='var(--amber)';
+  else re.style.color='var(--green)';
+}
+function openAddFloorModal(){
+  document.getElementById('add-floor-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('new-floor-name').focus(),50);
+}
+function closeModal(){ document.getElementById('add-floor-modal').classList.remove('show'); }
+function addFloor(){
+  const name=document.getElementById('new-floor-name').value.trim();
+  if(!name){toast('Enter a floor name','warn');return;}
+  const raw=document.getElementById('new-floor-items').value;
+  const items=raw.split(',').map(s=>s.trim()).filter(Boolean).map(n=>({id:uid(),name:n,status:'pending'}));
+  const floor={id:uid(),name,items,photos:[]};
+  state.floors.push(floor);
+  activeFloorId=floor.id;
+  saveState(); closeModal(); renderAll();
+  document.getElementById('new-floor-name').value='';
+  toast(name+' added ✓');
+}
+function deleteFloor(id){
+  if(!confirm('Delete this floor and all its data?')) return;
+  state.floors=state.floors.filter(f=>f.id!==id);
+  activeFloorId=state.floors.length?state.floors[0].id:null;
+  saveState(); renderAll(); toast('Floor removed');
+}
+function toggleStatus(fid,iid,status){
+  const floor=state.floors.find(f=>f.id===fid);
+  const item=floor.items.find(i=>i.id===iid);
+  item.status=status; saveState(); renderAll(); activeFloorId=fid;
+}
+function deleteItem(fid,iid){
+  const floor=state.floors.find(f=>f.id===fid);
+  floor.items=floor.items.filter(i=>i.id!==iid);
+  saveState(); renderAll(); activeFloorId=fid;
+}
+function showAddForm(fid){
+  document.getElementById('af-'+fid).classList.add('show');
+  document.getElementById('ai-'+fid).focus();
+}
+function hideAddForm(fid){ document.getElementById('af-'+fid).classList.remove('show'); document.getElementById('ai-'+fid).value=''; }
+function confirmAdd(fid){
+  const input=document.getElementById('ai-'+fid);
+  const name=input.value.trim(); if(!name) return;
+  const floor=state.floors.find(f=>f.id===fid);
+  floor.items.push({id:uid(),name,status:'pending'});
+  saveState(); renderAll(); activeFloorId=fid; toast('"'+name+'" added');
+}
+function handlePhoto(fid,inp){
+  const floor=state.floors.find(f=>f.id===fid);
+  const files=Array.from(inp.files); let done=0;
+  const mockGps = ['12.9716°N, 77.59°E','12.9721°N, 77.53°E','12.9699°N, 77.55°E'];
+  files.forEach(file=>{
+    const r=new FileReader();
+    r.onload=e=>{
+      const gps = mockGps[Math.floor(Math.random()*mockGps.length)];
+      floor.photos.push({id:uid(),data:e.target.result,name:file.name,gps});
+      done++; if(done===files.length){saveState();renderAll();activeFloorId=fid;toast(files.length+' photo(s) added ✓');}
+    }; r.readAsDataURL(file);
+  });
+}
+function delPhoto(fid,pid){
+  const floor=state.floors.find(f=>f.id===fid);
+  floor.photos=floor.photos.filter(p=>p.id!==pid);
+  saveState(); renderAll(); activeFloorId=fid;
+}
+function uid(){ return Date.now()+Math.floor(Math.random()*10000); }
+function getStats(floor){
+  const total=floor.items.length, done=floor.items.filter(i=>i.status==='done').length, delayed=floor.items.filter(i=>i.status==='delayed').length;
+  return{total,done,delayed,pending:total-done-delayed,pct:total===0?0:Math.round((done/total)*100)};
+}
+function barColor(pct){ return pct<30?'var(--red)':pct<70?'var(--amber)':'var(--green)'; }
+
+function renderAll(){ renderSummary(); renderDeadline(); renderFloors(); renderPending(); }
+
+function renderSummary(){
+  let td=0,ti=0,tDel=0;
+  state.floors.forEach(f=>{const s=getStats(f);td+=s.done;ti+=s.total;tDel+=s.delayed;});
+  const pct=ti===0?0:Math.round((td/ti)*100);
+  document.getElementById('total-planned').textContent=ti;
+  document.getElementById('overall-pct').textContent=pct+'%';
+  document.getElementById('overall-pct').style.color=barColor(pct);
+  document.getElementById('overall-sub').textContent=td+' of '+ti+' tasks done';
+  document.getElementById('overall-bar').style.width=pct+'%';
+  document.getElementById('overall-bar').style.background=barColor(pct);
+  document.getElementById('total-delayed').textContent=tDel;
+  document.getElementById('floor-count-tag').textContent=state.floors.length+' floors';
+
+  let nextItems = [];
+  state.floors.forEach(f=>f.items.filter(i=>i.status==='pending'||i.status==='delayed').forEach(i=>nextItems.push(`• ${i.name} <span style="opacity:0.5;font-size:10px">(${f.name})</span>`)));
+  const nextEl = document.getElementById('next-tasks');
+  if(ti===0){
+    nextEl.innerHTML = '<span style="color:var(--text3)">Add floors to see suggestions.</span>';
+  } else if(nextItems.length===0){
+    nextEl.innerHTML = '<span style="color:var(--text3)">All caught up!</span>';
+  } else {
+    nextEl.innerHTML = nextItems.slice(0,2).join('<br>') + (nextItems.length>2 ? `<br><span style="color:var(--text3);font-size:11px">+${nextItems.length-2} more pending</span>` : '');
+  }
+}
+
+function renderFloors(){
+  const tabsEl=document.getElementById('floor-tabs');
+  const pnlEl=document.getElementById('floor-panels');
+  const emEl=document.getElementById('empty-state');
+  if(state.floors.length===0){emEl.style.display='block';tabsEl.innerHTML='';pnlEl.innerHTML='';return;}
+  emEl.style.display='none';
+  if(!activeFloorId||!state.floors.find(f=>f.id===activeFloorId)) activeFloorId=state.floors[0].id;
+  tabsEl.innerHTML=state.floors.map(f=>{
+    const s=getStats(f);
+    return `<div class="floor-tab${f.id===activeFloorId?' active':''}" onclick="switchTab(${f.id})">${f.name} <span style="font-size:9px;opacity:0.7">${s.pct}%</span></div>`;
+  }).join('');
+  pnlEl.innerHTML=state.floors.map(f=>{
+    const s=getStats(f), bc=barColor(s.pct), act=f.id===activeFloorId;
+    const rows=f.items.map(item=>`
+      <div class="work-item">
+        <div class="wi-name">${item.name}</div>
+        <div class="stoggle">
+          <button class="sbtn done${item.status==='done'?' on':''}" onclick="toggleStatus(${f.id},${item.id},'done')">Done</button>
+          <button class="sbtn pending${item.status==='pending'?' on':''}" onclick="toggleStatus(${f.id},${item.id},'pending')">Pending</button>
+          <button class="sbtn delayed${item.status==='delayed'?' on':''}" onclick="toggleStatus(${f.id},${item.id},'delayed')">Delayed</button>
+        </div>
+        <button class="del-btn" onclick="deleteItem(${f.id},${item.id})">✕</button>
+      </div>`).join('');
+    const photos=f.photos.length
+      ? f.photos.map(p=>`<div class="pthumb"><img src="${p.data}" onclick="viewPhoto('${p.data}')">
+        ${p.gps ? `<div style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.7);color:#fff;font-size:9px;padding:2px 4px;border-radius:4px;font-family:var(--mono)">📍 ${p.gps}</div>` : ''}
+        <button class="pdel" onclick="delPhoto(${f.id},${p.id})">✕</button></div>`).join('')
+      : `<div class="photo-empty">📷 No photos yet<br>Click "Add Photos" to upload</div>`;
+    return `<div class="floor-panel${act?' active':''}" id="fpanel-${f.id}">
+      <div class="floor-header">
+        <div class="floor-title">${f.name}</div>
+        <div class="fpill"><span style="color:${bc};font-weight:500">${s.pct}%</span><span style="color:var(--text3)">${s.done}/${s.total} done</span></div>
+        <div style="flex:1;max-width:180px"><div class="pbar-bg" style="height:5px"><div class="pbar-fill" style="width:${s.pct}%;background:${bc}"></div></div></div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:5px 12px" onclick="deleteFloor(${f.id})">Delete</button>
+      </div>
+      <div class="floor-body">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Work Items</div><button class="mini-btn" onclick="showAddForm(${f.id})">+ Add Item</button></div>
+          ${rows}
+          <div class="add-form" id="af-${f.id}">
+            <input type="text" id="ai-${f.id}" placeholder="New work item" onkeydown="if(event.key==='Enter')confirmAdd(${f.id})">
+            <button class="btn-ok" onclick="confirmAdd(${f.id})">Add</button>
+            <button class="btn-no" onclick="hideAddForm(${f.id})">Cancel</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">Site Photos</div>
+            <div style="display:flex;gap:8px">
+              <button class="mini-btn" style="color:var(--amber);border-color:var(--amber)" onclick="simulateAI(${f.id})">✨ Analyze with AI</button>
+              <label class="mini-btn blue" for="pi-${f.id}" style="cursor:pointer">+ Add Photos</label>
+            </div>
+            <input type="file" class="photo-input" id="pi-${f.id}" accept="image/*" multiple onchange="handlePhoto(${f.id},this)">
+          </div>
+          <div class="photo-grid">${photos}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function switchTab(id){ activeFloorId=id; renderFloors(); }
+
+function renderPending(){
+  const sec=document.getElementById('pending-section');
+  const list=document.getElementById('pending-list');
+  const tag=document.getElementById('pending-count-tag');
+  const all=[];
+  state.floors.forEach(f=>f.items.filter(i=>i.status==='pending').forEach(i=>all.push({fn:f.name,in:i.name})));
+  if(all.length===0){sec.style.display='none';return;}
+  sec.style.display='block';
+  tag.textContent=all.length+' pending';
+  list.innerHTML=all.map(p=>`<div class="pending-card"><div class="pdot"></div><div class="ptext">${p.in}</div><span class="ptag">${p.fn}</span></div>`).join('');
+}
+
+function viewPhoto(src){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;display:flex;align-items:center;justify-content:center;cursor:pointer';
+  ov.onclick=()=>document.body.removeChild(ov);
+  const img=document.createElement('img');
+  img.src=src; img.style.cssText='max-width:90vw;max-height:90vh;border-radius:8px;object-fit:contain';
+  ov.appendChild(img); document.body.appendChild(ov);
+}
+
+function simulateAI(fid){
+  const f=state.floors.find(x=>x.id===fid);
+  if(!f.photos.length){ toast('Upload photos first to use AI','warn'); return; }
+  toast('AI is analyzing photos...','success');
+  setTimeout(()=>{
+    let checked=0;
+    f.items.forEach(i=>{ if(i.status==='pending'&&Math.random()>0.4){i.status='done';checked++;} });
+    saveState(); renderAll(); toast(`AI detected progress: ${checked} items marked done ✨`);
+  }, 1500);
+}
+
+function generateReport(){
+  let completed=[], ongoing=[], delayed=[];
+  state.floors.forEach(f=>{
+    f.items.forEach(i=>{
+      if(i.status==='done') completed.push(`- ${i.name} (${f.name})`);
+      else if(i.status==='pending') ongoing.push(`- ${i.name} (${f.name})`);
+      else if(i.status==='delayed') delayed.push(`- ${i.name} (${f.name})`);
+    });
+  });
+
+  const bldg = state.projectName || 'Unnamed Project';
+  const txt = `📊 Project Work Report
+🏗 Building: ${bldg}
+
+✔ Completed Work
+${completed.length?completed.join('\n'):'- None'}
+
+⏳ Ongoing Work
+${ongoing.length?ongoing.join('\n'):'- None'}
+
+⚠ Delayed Work
+${delayed.length?delayed.join('\n'):'- None'}
+`;
+  document.getElementById('report-content').textContent = txt;
+  document.getElementById('report-modal').classList.add('show');
+}
+
+function openDashboard() {
+  let td=0,tp=0,tDel=0,ti=0;
+  let floorHtml = '';
+  state.floors.forEach(f=>{
+    const s=getStats(f); td+=s.done; tp+=(s.total-s.done-s.delayed); tDel+=s.delayed; ti+=s.total;
+    floorHtml += `
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg3);padding:10px;border-radius:var(--rs);margin-bottom:6px;font-size:12px">
+        <span style="flex:1">${f.name}</span>
+        <div style="flex:2;background:var(--bg4);height:6px;border-radius:6px;margin:0 12px;overflow:hidden">
+          <div style="height:100%;background:var(--green);width:${s.pct}%"></div>
+        </div>
+        <span style="width:30px;text-align:right">${s.pct}%</span>
+      </div>`;
+  });
+  const pct = ti===0?0:Math.round((td/ti)*100);
+  document.getElementById('overall-progress-bar').style.width = pct+'%';
+  document.getElementById('overall-progress-text').textContent = pct+'%';
+  document.getElementById('done-count').textContent = td;
+  document.getElementById('ongoing-count').textContent = tp;
+  document.getElementById('delayed-count').textContent = tDel;
+  document.getElementById('floor-progress-list').innerHTML = floorHtml || '<div style="color:var(--text3);font-size:12px;text-align:center;padding:20px 0">No floors added yet</div>';
+  document.getElementById('dashboard-modal').classList.add('show');
+}
+
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+type+' show';
+  setTimeout(()=>t.className='toast',3000);
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('add-floor-modal').classList.contains('show')) addFloor();
+  if(e.key==='Escape') closeModal();
+});
+</script>
+</body>
+</html>

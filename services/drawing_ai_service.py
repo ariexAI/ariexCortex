@@ -1,23 +1,26 @@
-import re
+import os
+from pdf2image import convert_from_path
+import pytesseract
 
+POPPLER_PATH = r"C:\poppler\Release-25.12.0-0\poppler-25.12.0\Library\bin"
 
-def detect_dimensions(text):
+def process_drawing(pdf_path: str) -> dict:
+    if not os.path.exists(pdf_path):
+        return {"status": "error", "message": "File not found"}
 
-    detected = []
+    try:
+        images = convert_from_path(pdf_path, dpi=300, poppler_path=POPPLER_PATH)
+        
+        full_text = ""
+        for image in images:
+            text = pytesseract.image_to_string(image)
+            full_text += text
 
-    # Match metric footing sizes
-    # 1500x1500
-    # 1500 X 1500
-    # 1500 x1500
+        return {
+            "status": "success",
+            "pages": len(images),
+            "text": full_text
+        }
 
-    pattern = r"\b(\d{3,4})\s*[xX×]\s*(\d{3,4})\b"
-
-    matches = re.findall(pattern, text)
-
-    for m in matches:
-
-        size = f"{m[0]}X{m[1]}"
-
-        detected.append(size)
-
-    return sorted(list(set(detected)))
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

@@ -1,23 +1,26 @@
 import math
-
 def calculate_footing(data):
 
     length = data.length
     breadth = data.breadth
+    n = data.number_of_footings
 
-    # Quantity Calculations
     excavation = (length + 0.6) * (breadth + 0.6) * data.excavation_depth
     pcc = length * breadth * data.pcc_thickness
     rcc = length * breadth * data.footing_depth
 
-    # Steel Calculation
     bars_x = math.ceil(breadth / data.steel_spacing) + 1
     bars_y = math.ceil(length / data.steel_spacing) + 1
 
     total_length = (bars_x * length) + (bars_y * breadth)
     steel_weight = (data.steel_diameter ** 2 / 162) * total_length
 
-    # Cost Calculations
+    # Multiply by number of footings
+    excavation *= n
+    pcc *= n
+    rcc *= n
+    steel_weight *= n
+
     excavation_amount = excavation * data.excavation_rate
     pcc_amount = pcc * data.pcc_rate
     rcc_amount = rcc * data.rcc_rate

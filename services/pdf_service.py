@@ -1,40 +1,16 @@
-import pytesseract
 from pdf2image import convert_from_path
-from services.drawing_ai_service import detect_dimensions
+import pytesseract
 
+POPPLER_PATH = r"C:\poppler\Release-25.12.0-0\poppler-25.12.0\Library\bin"
 
-# Tesseract Location
-pytesseract.pytesseract.tesseract_cmd = r"C:\tessa\Tesseract-OCR\tesseract.exe"
+def extract_text_from_pdf(pdf_path):
 
+    images = convert_from_path(pdf_path, poppler_path=POPPLER_PATH)
 
-def detect_footing_sizes(file_path):
+    text_output = ""
 
-    try:
+    for image in images:
+        text = pytesseract.image_to_string(image)
+        text_output += text
 
-        # Convert PDF → Images using Poppler
-        images = convert_from_path(
-            file_path,
-            dpi=300,
-            poppler_path=r"C:\poppler\Release-25.12.0-0\poppler-25.12.0\Library\bin"
-        )
-
-        full_text = ""
-
-        # OCR each page
-        for img in images:
-
-            text = pytesseract.image_to_string(img)
-
-            full_text += text + "\n"
-
-        print("===== OCR TEXT =====")
-        print(full_text[:1500])
-
-
-        detected = detect_dimensions(full_text)
-
-        return detected
-
-    except Exception as e:
-
-        return {"error": str(e)}
+    return text_output
