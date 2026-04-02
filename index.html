@@ -510,8 +510,8 @@
 <!-- ═══════════════ CHAT PAGE ═══════════════ -->
 <div id="chatPage">
   <header>
-    <div class="logo">
-      <div class="logo-icon">
+    <div class="logo" onclick="goHome()" style="cursor:pointer;">
+  <div class="logo-icon">
         <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
       </div>
       <div class="logo-text">Ariex <span>Cortex</span></div>
@@ -813,6 +813,15 @@
     sendBtn.disabled = false;
     inputBox.focus();
   }
+function goHome() {
+  conversationHistory = [];
+  chatWrapper.innerHTML = '';
+  const welcomeDiv = document.createElement('div');
+  welcomeDiv.id = 'welcome';
+  welcomeDiv.className = 'welcome';
+  welcomeDiv.innerHTML = document.getElementById('welcomeTemplate').innerHTML;
+  chatWrapper.appendChild(welcomeDiv);
+}
 
   // ── START ─────────────────────────────────
   init();
