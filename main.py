@@ -1,6 +1,8 @@
-# -----------------------
-# PATH FIX (IMPORTANT)
-# -----------------------
+from dotenv import load_dotenv
+import os
+from pathlib import Path
+# Load .env from project root before any services are imported
+load_dotenv(dotenv_path=Path(__file__).resolve().parent / ".env", override=True)
 import sys
 import os
 

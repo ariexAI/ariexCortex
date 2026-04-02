@@ -1,11 +1,15 @@
 import re
 import os
+from pathlib import Path
 from groq import Groq
+from dotenv import load_dotenv
 from services.footing_service import calculate_footing
 from services.slab_service import calculate_slab
 from models.footing_model import FootingInput
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+# Explicitly load .env from project root (parent of services/ folder)
+_env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=_env_path, override=True)
 
 SYSTEM_PROMPT = """You are Ariex Cortex, a senior civil engineer AI assistant.
 You give practical site advice, IS code references, BOQ guidance, and professional explanations.
@@ -49,7 +53,6 @@ def process_query(question: str, history: list = []):
 
     q = question.lower()
 
-    # NATURAL LANGUAGE BOQ
     if is_natural_boq(question) and not ("calculate footing" in q or "calculate slab" in q or "full boq" in q):
         dims = extract_dimensions(question)
         count = extract_footing_count(question)
@@ -104,7 +107,6 @@ def process_query(question: str, history: list = []):
         else:
             return {"answer": "Please include dimensions like: 3 footings 2x2x0.5 and slab 5x4", "category": "input_required"}
 
-    # FULL BOQ
     elif ("full boq" in q or "project boq" in q or ("footing" in q and "slab" in q)):
         dims = extract_dimensions(question)
         if dims:
@@ -146,7 +148,6 @@ def process_query(question: str, history: list = []):
         else:
             return {"answer": "Please provide dimensions like: full boq 3 x 3 x 0.5", "category": "input_required"}
 
-    # FOOTING CALCULATION
     elif "footing" in q and ("calculate" in q or "compute" in q):
         dims = extract_dimensions(question)
         if dims:
@@ -177,7 +178,6 @@ def process_query(question: str, history: list = []):
         else:
             return {"answer": "Please provide dimensions like: Calculate footing 2 x 2 x 0.5", "category": "input_required"}
 
-    # SLAB CALCULATION
     elif "slab" in q and ("calculate" in q or "compute" in q):
         dims = extract_dimensions(question)
         if dims:
@@ -200,7 +200,6 @@ def process_query(question: str, history: list = []):
         else:
             return {"answer": "Please provide dimensions like: Calculate slab 5 x 4 x 0.15", "category": "input_required"}
 
-    # STEEL QUERY
     elif "steel" in q and "calculate" not in q:
         return {
             "answer": (
@@ -213,7 +212,6 @@ def process_query(question: str, history: list = []):
             "category": "engineering"
         }
 
-    # EXCAVATION QUERY
     elif "excavation" in q and "calculate" not in q:
         return {
             "answer": (
@@ -225,9 +223,9 @@ def process_query(question: str, history: list = []):
             "category": "engineering"
         }
 
-    # AI BRAIN WITH MEMORY
     else:
         try:
+            client = Groq(api_key=os.getenv("GROQ_API_KEY"))  # ← moved here
             messages = [{"role": "system", "content": SYSTEM_PROMPT}]
             for msg in history:
                 messages.append({"role": msg["role"], "content": msg["content"]})
